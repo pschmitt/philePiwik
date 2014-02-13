@@ -26,35 +26,48 @@ class PhilePiwik extends \Phile\Plugin\AbstractPlugin implements \Phile\EventObs
 
     public function on($eventKey, $data = null) {
         if ($eventKey == 'config_loaded') {
-                if (isset($this->config['piwik_host'])) {
-                    $this->piwikHost = $this->config['piwik_host'];
-                }
-                if (isset($this->config['piwik_site_id'])) {
-                    $this->piwikSiteId = $this->config['piwik_site_id'];
-                }
+            $this->config_loaded();
         } else if ($eventKey == 'before_render_template') {
-                if (\Phile\Registry::isRegistered('templateVars')) {
-                    $twig_vars = \Phile\Registry::get('templateVars');
-                } else {
-                    $twig_vars = array();
-                }
-
-                $twig_vars['piwik_tracking_code'] = '<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  _paq.push(["trackPageView"]);
-  _paq.push(["enableLinkTracking"]);
-
-  (function() {
-    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://' . $this->piwikHost . '/";
-    _paq.push(["setTrackerUrl", u+"piwik.php"]);
-    _paq.push(["setSiteId", "'. $this->piwikSiteId. '"]);
-    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
-    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<!-- End Piwik Code -->';
-                \Phile\Registry::set('templateVars', $twig_vars);
+            $this->export_twig_vars();
         }
+    }
+
+    private function config_loaded() {
+        // merge the arrays to bind the settings to the view
+        // Note: this->config takes precedence
+        $this->config = array_merge($this->settings, $this->config);
+        if (isset($this->config['piwik_host'])) {
+            $this->piwikHost = $this->config['piwik_host'];
+        }
+        if (isset($this->config['piwik_site_id'])) {
+            $this->piwikSiteId = $this->config['piwik_site_id'];
+        }
+    }
+    
+    private function export_twig_vars() {
+        if (\Phile\Registry::isRegistered('templateVars')) {
+            $twig_vars = \Phile\Registry::get('templateVars');
+        } else {
+            $twig_vars = array();
+        }
+
+        $twig_vars['piwik_tracking_code'] = '
+            <!-- Piwik -->
+                <script type="text/javascript">
+                  var _paq = _paq || [];
+                  _paq.push(["trackPageView"]);
+                  _paq.push(["enableLinkTracking"]);
+
+                  (function() {
+                    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://' . $this->piwikHost . '/";
+                    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+                    _paq.push(["setSiteId", "'. $this->piwikSiteId. '"]);
+                    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+                    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+                  })();
+                </script>
+            <!-- End Piwik Code -->';
+        \Phile\Registry::set('templateVars', $twig_vars);
+
     }
 }
