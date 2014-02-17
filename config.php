@@ -5,6 +5,7 @@
 return array(
     'piwik_host' => 'stats.' . $_SERVER['SERVER_NAME'], // default host: stats.$HOST
     'piwik_site_id' => '1', // default site id
+    'piwik_do_not_track' => true, // client side DoNotTrack detection
     'piwik_image_tracking' => false, // Whether to use image tracking instead of javascript
     'piwik_image_page_name' => '', // Pagne name (Image tracking only)
     'piwik_track_subdomains' => false, // Track visitors across all subdomains

@@ -19,6 +19,7 @@ class PhilePiwik extends \Phile\Plugin\AbstractPlugin implements \Phile\EventObs
     private $track_subdomains;
     private $prepend_domain;
     private $hide_aliases;
+    private $do_not_track;
 
     public function __construct() {
         \Phile\Event::registerEvent('config_loaded', $this);
@@ -70,6 +71,9 @@ class PhilePiwik extends \Phile\Plugin\AbstractPlugin implements \Phile\EventObs
         if (isset($this->config['piwik_hide_aliases'])) {
             $this->hide_aliases = $this->config['piwik_hide_aliases'];
         }
+        if (isset($this->config['piwik_do_not_track'])) {
+            $this->do_not_track = $this->config['piwik_do_not_track'];
+        }
     }
 
     private function get_image_tracking_code() {
@@ -91,8 +95,6 @@ class PhilePiwik extends \Phile\Plugin\AbstractPlugin implements \Phile\EventObs
               (function() {
                 var u=(("https:" == document.location.protocol) ? "https" : "http") + "://%s/";
                 %s
-                %s
-                %s
                 _paq.push(["setTrackerUrl", u+"piwik.php"]);
                 _paq.push(["setSiteId", "%d"]);
                 var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
@@ -100,11 +102,12 @@ class PhilePiwik extends \Phile\Plugin\AbstractPlugin implements \Phile\EventObs
               })();
             </script>
         <!-- End Piwik Code -->';
-        $subdomain_txt = $this->track_subdomains ? sprintf('_paq.push(["setCookieDomain", "*.%s"]);', $this->server_name) : '';
-        $prepend_txt = $this->prepend_domain ? '_paq.push(["setDocumentTitle", document.domain + "/" + document.title]);' : '';
-        $alias_txt = $this->hide_aliases ? sprintf('_paq.push(["setDomains", ["*.%s"]]);', $this->server_name) : '';
+        $dnt_txt = $this->do_not_track ? '_paq.push(["setDoNotTrack", true]);' . "\n" : '';
+        $subdomain_txt = $this->track_subdomains ? sprintf('_paq.push(["setCookieDomain", "*.%s"]);' . "\n", $this->server_name) : '';
+        $prepend_txt = $this->prepend_domain ? '_paq.push(["setDocumentTitle", document.domain + "/" + document.title]);' . "\n" : '';
+        $alias_txt = $this->hide_aliases ? sprintf('_paq.push(["setDomains", ["*.%s"]]);' . "\n", $this->server_name) : '';
 
-        $js_code = sprintf($js_code, $this->piwik_host, $subdomain_txt, $prepend_txt, $alias_txt, $this->site_id);
+        $js_code = sprintf($js_code, $this->piwik_host, $dnt_txt . $subdomain_txt . $prepend_txt . $alias_txt, $this->site_id);
 
         return $js_code;
     }
