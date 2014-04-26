@@ -84,9 +84,14 @@ class Plugin extends \Phile\Plugin\AbstractPlugin implements \Phile\Gateway\Even
     private function get_image_tracking_code() {
         $image_code = '
                  <!-- Piwik Image Tracker -->
-                     <img src="http://stats.lxl.io/piwik.php?idsite=1&amp;rec=1%s" style="border:0" alt="" />
+                     <img src="http%s://%s/piwik.php?idsite=1&amp;rec=1%s" style="border:0" alt="" />
                  <!-- End Piwik -->';
-        $image_code = sprintf($image_code, isset($this->image_page_name) ? '&amp;action_name=' . $this->image_page_name : '');
+        // Detect whether SSL is on
+        $ssl = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off';
+        $image_code = sprintf($image_code,
+                              $ssl ? 's' : '',
+                              $this->piwik_host,
+                              isset($this->image_page_name) ? '&amp;action_name=' . $this->image_page_name : '');
         return $image_code;
     }
 
