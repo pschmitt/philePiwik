@@ -7,9 +7,10 @@ Add piwik tracking code to your Phile site
 ## Installation
 
 ```bash
-git clone https://github.com/pschmitt/philePiwig.git ~http/plugins/philePiwig
+mkdir -p ~http/plugins/pschmitt
+git clone https://github.com/pschmitt/philePiwik.git ~http/plugins/pschmitt/piwik
 # You may consider using a submodule for this
-git submodule add http://github.com/pschmitt/philePiwig ~http/plugins/philePiwig
+git submodule add http://github.com/pschmitt/philePiwik.git ~http/plugins/pschmitt/piwik
 ```
 
 Then activate in your `config.php`:
@@ -17,7 +18,7 @@ Then activate in your `config.php`:
 ```php
 $config['plugins'] = array(
     // [...]
-    'philePiwig' => array('active' => true),
+    'pschmitt\\piwik' => array('active' => true),
 );
 ```
 

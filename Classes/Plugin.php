@@ -1,14 +1,19 @@
 <?php
 
+namespace Phile\Plugin\Pschmitt\Piwik;
+
 /**
- * The file description. *
- * @package Phile
- * @subpackage PhilePiwik
- * @version 1.0.0
+ * Piwik plugin for Phile
+ *
+ * @version 1.0.1
  * @author Philipp Schmitt <philipp@schmitt.co>
+ * @link https://github.com/pschmitt/philePiwik
+ * @license http://opensource.org/licenses/MIT
+ * @package Phile\Plugin\Pschmitt\Piwik
  *
  */
-class PhilePiwik extends \Phile\Plugin\AbstractPlugin implements \Phile\EventObserverInterface {
+
+class Plugin extends \Phile\Plugin\AbstractPlugin implements \Phile\Gateway\EventObserverInterface {
 
     private $config;
     private $site_id;
@@ -121,6 +126,6 @@ class PhilePiwik extends \Phile\Plugin\AbstractPlugin implements \Phile\EventObs
 
         $twig_vars['piwik_tracking_code'] = $this->image_tracking ? $this->get_image_tracking_code() : $this->get_js_tracking_code();
 
-        Phile\Registry::set('templateVars', $twig_vars);
+        \Phile\Registry::set('templateVars', $twig_vars);
     }
 }
